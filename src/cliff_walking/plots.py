@@ -36,25 +36,46 @@ def plot_reward_curve(
     sarsa_rewards: np.ndarray,
     out_path: Path,
     smooth: int = 10,
+    q_rewards_ref: np.ndarray | None = None,
+    sarsa_rewards_ref: np.ndarray | None = None,
 ) -> None:
     q_mean = q_rewards.mean(axis=0)
     s_mean = sarsa_rewards.mean(axis=0)
     episodes = np.arange(1, q_mean.size + 1)
 
     fig, ax = plt.subplots(figsize=(6.5, 4.5))
-    ax.plot(episodes, moving_average(s_mean, smooth), color="#1abcc6", lw=1.8, label="SARSA")
+    ax.plot(episodes, moving_average(s_mean, smooth), color="#1abcc6", lw=1.8, label="Sarsa")
     ax.plot(
         episodes, moving_average(q_mean, smooth), color="#d6322e", lw=1.8, label="Q-learning"
     )
+    if sarsa_rewards_ref is not None:
+        ax.plot(
+            episodes,
+            moving_average(sarsa_rewards_ref.mean(axis=0), smooth),
+            color="#1abcc6",
+            lw=1.2,
+            linestyle=":",
+            label="Sarsa, Sutton Pub.",
+        )
+    if q_rewards_ref is not None:
+        ax.plot(
+            episodes,
+            moving_average(q_rewards_ref.mean(axis=0), smooth),
+            color="#d6322e",
+            lw=1.2,
+            linestyle=":",
+            label="Q-learning, Sutton Pub.",
+        )
     ax.set_xlabel("Episodes")
     ax.set_ylabel("Reward Sum for Episode")
     ax.set_title(
-        f"SARSA vs Q-Learning on Cliff Walking\n"
-        f"(averaged over {q_rewards.shape[0]} runs, ε=0.1, α=0.5)"
+        f"Sarsa Vs. Q-Learning Cliff Walking\n"
+        f"Epsilon=0.1, Alpha=0.5\n"
+        f"(averaged over {q_rewards.shape[0]} runs)"
     )
     ax.set_ylim(-100, 0)
     ax.grid(alpha=0.3)
-    ax.legend(loc="lower right")
+    ax.legend(loc="lower right", fontsize=9)
     fig.tight_layout()
     fig.savefig(out_path, dpi=140)
     plt.close(fig)
@@ -157,8 +178,18 @@ def main() -> None:
     sarsa_rewards = np.load(ARTIFACTS_DIR / "sarsa_rewards.npy")
     q_Q = np.load(ARTIFACTS_DIR / "q_Q.npy")
     sarsa_Q = np.load(ARTIFACTS_DIR / "sarsa_Q.npy")
+    q_ref_path = ARTIFACTS_DIR / "q_rewards_ref.npy"
+    s_ref_path = ARTIFACTS_DIR / "sarsa_rewards_ref.npy"
+    q_ref = np.load(q_ref_path) if q_ref_path.exists() else None
+    s_ref = np.load(s_ref_path) if s_ref_path.exists() else None
 
-    plot_reward_curve(q_rewards, sarsa_rewards, ARTIFACTS_DIR / "reward_curve.png")
+    plot_reward_curve(
+        q_rewards,
+        sarsa_rewards,
+        ARTIFACTS_DIR / "reward_curve.png",
+        q_rewards_ref=q_ref,
+        sarsa_rewards_ref=s_ref,
+    )
     plot_policy(q_Q, "Q-learning policy", ARTIFACTS_DIR / "policy_qlearning.png")
     plot_policy(sarsa_Q, "SARSA policy", ARTIFACTS_DIR / "policy_sarsa.png")
     render_rollout_gif(q_Q, "Q-learning rollout", ARTIFACTS_DIR / "rollout_qlearning.gif")

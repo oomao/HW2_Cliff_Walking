@@ -11,7 +11,8 @@
       "Bash(python -m pip install imageio pillow)",
       "Bash(python -c \"import numpy, matplotlib, imageio, PIL; print\\('numpy', numpy.__version__\\); print\\('matplotlib', matplotlib.__version__\\); print\\('imageio', imageio.__version__\\); print\\('PIL', PIL.__version__\\)\")",
       "Bash(PYTHONPATH=src python -m cliff_walking.train --episodes 500 --seeds 50 --alpha 0.5 --gamma 1.0 --epsilon 0.1)",
-      "Bash(PYTHONPATH=src python -m cliff_walking.plots)"
+      "Bash(PYTHONPATH=src python -m cliff_walking.plots)",
+      "Bash(PYTHONPATH=src python -m cliff_walking.train --episodes 500 --seeds 50)"
     ]
   }
 }
