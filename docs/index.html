@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cliff Walking · Q-learning vs SARSA — Live Demo</title>
+  <title>Cliff Walking · Q-learning 與 SARSA 比較 — Live Demo</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -18,10 +18,10 @@
     body {
       margin: 0;
       padding: 2.5rem 1.25rem 4rem;
-      font-family: system-ui, "Segoe UI", -apple-system, sans-serif;
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.55;
+      line-height: 1.7;
     }
     main { max-width: 1000px; margin: 0 auto; }
     h1 { font-size: 2rem; margin-top: 0; }
@@ -67,7 +67,7 @@
       border-collapse: collapse;
       font-size: 0.95rem;
     }
-    th, td { padding: 0.45rem 0.7rem; text-align: left; border-bottom: 1px solid #334155; }
+    th, td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid #334155; vertical-align: top; }
     th { color: var(--accent); font-weight: 600; }
     .q { color: var(--q); font-weight: 600; }
     .s { color: var(--s); font-weight: 600; }
@@ -82,60 +82,85 @@
 </head>
 <body>
 <main>
-  <h1>Cliff Walking — Q-learning vs SARSA</h1>
-  <p class="tagline">DRL Homework 2 · Tabular control on the 4×12 Sutton &amp; Barto Cliff Walking gridworld.</p>
+  <h1>Cliff Walking — Q-learning 與 SARSA 比較</h1>
+  <p class="tagline">DRL 作業 2 · 在 4×12 Sutton &amp; Barto 懸崖行走格子世界上進行表格式強化學習。</p>
   <p class="meta">
-    <a href="https://github.com/oomao/HW2_Cliff_Walking">Source on GitHub</a> ·
-    Averaged over 50 seeds · 500 episodes · ε=0.1, α=0.5, γ=1.0
+    <a href="https://github.com/oomao/HW2_Cliff_Walking">GitHub 原始碼</a> ·
+    50 個獨立種子平均 · 每次 500 回合 · ε=0.1、α=0.5、γ=1.0
   </p>
 
-  <h2>Learning curves</h2>
+  <h2>一、學習曲線</h2>
   <div class="panel">
     <figure>
-      <img src="assets/reward_curve.png" alt="Reward curves for Q-learning and SARSA" />
+      <img src="assets/reward_curve.png" alt="Q-learning 與 SARSA 的獎勵曲線比較" />
       <figcaption>
-        <span class="s">SARSA</span> learns a safer detour and converges to ≈ −25 per episode.
-        <span class="q">Q-learning</span> learns the optimal cliff-edge path but suffers from ε-greedy
-        exploration hits, stabilising near ≈ −50.
+        <span class="s">SARSA</span> 學到較安全的繞遠路徑，每回合獎勵收斂在 ≈ −25。
+        <span class="q">Q-learning</span> 學到最優的懸崖邊路徑，但受 ε-greedy 偶發踩崖影響，
+        每回合獎勵收斂在 ≈ −50。虛線為另一組獨立種子的 Sutton Pub. 參考曲線，兩條線走勢一致代表結果可重現。
       </figcaption>
     </figure>
   </div>
 
-  <h2>Learned greedy policies</h2>
+  <h2>二、最終貪婪策略</h2>
   <div class="panel grid2">
     <figure>
-      <img src="assets/policy_qlearning.png" alt="Q-learning greedy policy grid" />
-      <figcaption>Q-learning hugs the cliff — shortest path, highest risk.</figcaption>
+      <img src="assets/policy_qlearning.png" alt="Q-learning 學到的貪婪策略" />
+      <figcaption>Q-learning 貼著懸崖走——路徑最短，風險最高。</figcaption>
     </figure>
     <figure>
-      <img src="assets/policy_sarsa.png" alt="SARSA greedy policy grid" />
-      <figcaption>SARSA routes along the top row — longer path, safer under exploration.</figcaption>
+      <img src="assets/policy_sarsa.png" alt="SARSA 學到的貪婪策略" />
+      <figcaption>SARSA 繞到頂端走——路徑較長，但在探索下較安全。</figcaption>
     </figure>
   </div>
 
-  <h2>Live rollouts</h2>
+  <h2>三、動畫展示（Live Rollout）</h2>
   <div class="panel grid2">
     <figure>
-      <img src="assets/rollout_qlearning.gif" alt="Q-learning rollout animation" />
-      <figcaption>Greedy rollout using the Q-learning Q-table.</figcaption>
+      <img src="assets/rollout_qlearning.gif" alt="Q-learning 策略動畫" />
+      <figcaption>以 Q-learning 學到的 Q-table 做貪婪走訪。</figcaption>
     </figure>
     <figure>
-      <img src="assets/rollout_sarsa.gif" alt="SARSA rollout animation" />
-      <figcaption>Greedy rollout using the SARSA Q-table.</figcaption>
+      <img src="assets/rollout_sarsa.gif" alt="SARSA 策略動畫" />
+      <figcaption>以 SARSA 學到的 Q-table 做貪婪走訪。</figcaption>
     </figure>
   </div>
 
-  <h2>Summary</h2>
+  <h2>四、結果摘要</h2>
   <div class="panel">
     <table>
-      <tr><th>Method</th><th>Final mean reward (last 50 eps)</th><th>Path shape</th><th>Risk profile</th></tr>
-      <tr><td class="q">Q-learning (off-policy)</td><td>≈ −52</td><td>Cliff edge (row 2)</td><td>Optimal greedy, exploration causes cliff falls during training</td></tr>
-      <tr><td class="s">SARSA (on-policy)</td><td>≈ −25</td><td>Detour via top row</td><td>Accounts for ε-exploration, learns safer path</td></tr>
+      <tr>
+        <th>方法</th>
+        <th>最後 50 回合平均獎勵</th>
+        <th>路徑形狀</th>
+        <th>風險特性</th>
+      </tr>
+      <tr>
+        <td class="q">Q-learning（離策略）</td>
+        <td>≈ −52</td>
+        <td>沿懸崖邊（第 2 列）</td>
+        <td>理論最優貪婪策略，訓練中 ε 探索會把 agent 推下懸崖</td>
+      </tr>
+      <tr>
+        <td class="s">SARSA（同策略）</td>
+        <td>≈ −25</td>
+        <td>從頂端繞遠路</td>
+        <td>把 ε-探索的風險納入估計，學到較安全的路徑</td>
+      </tr>
     </table>
   </div>
 
+  <h2>五、重點觀察</h2>
+  <div class="panel">
+    <ul>
+      <li><strong>收斂速度：</strong>兩者都在前 ~80 回合完成主要學習，之後進入穩定期。</li>
+      <li><strong>穩定性：</strong>Q-learning 回合獎勵波動明顯較大（一次踩崖就抹平許多正常步的獎勵）；SARSA 的回合獎勵分布較緊湊。</li>
+      <li><strong>何時選 Q-learning：</strong>部署時會把探索關掉（ε=0），只在乎漸近最優路徑的情境。</li>
+      <li><strong>何時選 SARSA：</strong>部署時仍保留探索、或單次失誤成本極高的情境（例如實體機器人、安全控制）。</li>
+    </ul>
+  </div>
+
   <footer>
-    Built for DRL HW2 · 2026-04 · tabular control, no deep nets — just Bellman.
+    為 DRL HW2 所作 · 2026-04 · 純表格式強化學習，無深度網路，僅 Bellman 更新。
   </footer>
 </main>
 </body>
